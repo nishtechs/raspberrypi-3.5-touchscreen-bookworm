@@ -62,21 +62,30 @@ if [ -n "$TARGET_HOME" ] && [ -d "$TARGET_HOME" ]; then
   cat << 'EOF' > "$KANSHI_DIR/config"
 profile {
     output SPI-1 enable transform 90
-    output HDMI-A-1 disable
 }
 EOF
   chown -R "$TARGET_USER:$TARGET_USER" "$TARGET_HOME/.config"
   echo "[+] Kanshi display profile configured (output SPI-1, transform 90)."
+
+  # Ensure labwc maps ADS7846 touch directly to SPI-1
+  LABWC_DIR="$TARGET_HOME/.config/labwc"
+  mkdir -p "$LABWC_DIR"
+  if [ ! -f "$LABWC_DIR/rc.xml" ] || ! grep -q "ADS7846 Touchscreen" "$LABWC_DIR/rc.xml"; then
+    cat << 'EOF' > "$LABWC_DIR/rc.xml"
+<?xml version="1.0"?>
+<openbox_config xmlns="http://openbox.org/3.4/rc">
+	<touch deviceName="ADS7846 Touchscreen" mapToOutput="SPI-1" mouseEmulation="yes"/>
+</openbox_config>
+EOF
+    chown -R "$TARGET_USER:$TARGET_USER" "$LABWC_DIR"
+    echo "[+] labwc touch mapping configured (mapToOutput SPI-1)."
+  fi
 fi
 
-# 4. Touchscreen Udev Rule (ensure standard libinput binding and 90° landscape calibration)
-UDEV_RULE="/etc/udev/rules.d/99-touchscreen.rules"
-cat << 'EOF' > "$UDEV_RULE"
-ACTION=="add|change", SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="ADS7846 Touchscreen", ENV{LIBINPUT_CALIBRATION_MATRIX}="0 1 0 -1 0 1"
-EOF
+# Clean up any legacy/conflicting udev calibration rules
+rm -f /etc/udev/rules.d/99-touchscreen.rules /etc/udev/rules.d/99-ads7846.rules 2>/dev/null || true
 udevadm control --reload-rules 2>/dev/null || true
 udevadm trigger -s input 2>/dev/null || true
-echo "[+] Udev touch rule written to $UDEV_RULE"
 
 echo ""
 echo "============================================================"

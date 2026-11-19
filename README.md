@@ -106,12 +106,21 @@ If you prefer to configure manually:
    cat << 'EOF' > ~/.config/kanshi/config
    profile {
        output SPI-1 enable transform 90
-       output HDMI-A-1 disable
    }
    EOF
    ```
 
-4. **Reboot:**
+4. **Ensure `labwc` maps touch to `SPI-1`:**
+   In `~/.config/labwc/rc.xml`:
+   ```xml
+   <?xml version="1.0"?>
+   <openbox_config xmlns="http://openbox.org/3.4/rc">
+       <touch deviceName="ADS7846 Touchscreen" mapToOutput="SPI-1" mouseEmulation="yes"/>
+   </openbox_config>
+   ```
+   *(With `mapToOutput="SPI-1"`, labwc automatically syncs the touch orientation with the screen transform).*
+
+5. **Reboot:**
    ```bash
    sudo reboot
    ```

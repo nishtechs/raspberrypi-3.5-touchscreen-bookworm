@@ -42,7 +42,6 @@ mkdir -p "$(dirname "$KANSHI_CONFIG")"
 cat << EOF > "$KANSHI_CONFIG"
 profile {
     output SPI-1 enable transform $TRANSFORM
-    output HDMI-A-1 disable
 }
 EOF
 
