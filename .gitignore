@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary batch/auth files
+.temp_askpass.bat
+*.bak
+*.log
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# OS generated
+Thumbs.db
+.DS_Store
