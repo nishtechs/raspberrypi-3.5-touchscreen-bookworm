@@ -140,6 +140,30 @@ The change takes effect immediately in your Wayland desktop session and is saved
 
 ---
 
+## Touchscreen Calibration & Axis Alignment
+
+Resistive touch screens (ADS7846 / XPT2046) output raw ADC coordinates oriented in portrait mode. When the display is rotated to 90° landscape, the touch axes must be transformed using `libinput`'s calibration matrix.
+
+Use `scripts/calibrate_touch.sh` to align the touch axes:
+
+```bash
+# Standard 90° Landscape (default):
+sudo ./scripts/calibrate_touch.sh 90
+
+# If horizontal movement is inverted:
+sudo ./scripts/calibrate_touch.sh invert-x
+
+# If vertical movement is inverted:
+sudo ./scripts/calibrate_touch.sh invert-y
+
+# For 270° Landscape:
+sudo ./scripts/calibrate_touch.sh 270
+```
+
+This applies the affine matrix directly via `/etc/udev/rules.d/99-touchscreen.rules` and reloads the Wayland session.
+
+---
+
 ## Performance & Memory Optimization for Pi Zero W
 
 Raspberry Pi OS is designed for all models (including quad-core Pi 4 and Pi 5 with 4–8 GB RAM). On a **Pi Zero W** (single-core ARMv6, 512 MB RAM), many default background services consume critical CPU cycles and RAM.

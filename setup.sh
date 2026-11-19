@@ -69,11 +69,13 @@ EOF
   echo "[+] Kanshi display profile configured (output SPI-1, transform 90)."
 fi
 
-# 4. Touchscreen Udev Rule (ensure standard libinput binding)
-UDEV_RULE="/etc/udev/rules.d/99-ads7846.rules"
+# 4. Touchscreen Udev Rule (ensure standard libinput binding and 90° landscape calibration)
+UDEV_RULE="/etc/udev/rules.d/99-touchscreen.rules"
 cat << 'EOF' > "$UDEV_RULE"
-SUBSYSTEM=="input", ATTRS{name}=="ADS7846 Touchscreen", ENV{ID_INPUT_TOUCHSCREEN}="1"
+ACTION=="add|change", SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="ADS7846 Touchscreen", ENV{LIBINPUT_CALIBRATION_MATRIX}="0 1 0 -1 0 1"
 EOF
+udevadm control --reload-rules 2>/dev/null || true
+udevadm trigger -s input 2>/dev/null || true
 echo "[+] Udev touch rule written to $UDEV_RULE"
 
 echo ""
