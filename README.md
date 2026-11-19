@@ -140,6 +140,28 @@ The change takes effect immediately in your Wayland desktop session and is saved
 
 ---
 
+## Performance & Memory Optimization for Pi Zero W
+
+Raspberry Pi OS is designed for all models (including quad-core Pi 4 and Pi 5 with 4–8 GB RAM). On a **Pi Zero W** (single-core ARMv6, 512 MB RAM), many default background services consume critical CPU cycles and RAM.
+
+Run the optimization script to debloat the system:
+
+```bash
+sudo ./scripts/optimize_pi_zero.sh
+```
+
+### What this optimizes:
+1. **Disables Raspberry Pi Connect & WayVNC:** Frees **~40 MB RAM** and eliminates constant background video encoding.
+2. **Removes CUPS Printing Services:** A portable mini display has no need for network printer discovery. Saves **~20 MB RAM**.
+3. **Removes ModemManager:** Stops background serial polling for USB cellular dongles.
+4. **Disables `apt-daily` background timers:** Prevents background apt checks from spiking the single CPU core to 100%.
+5. **Tunes Kernel Swappiness (`vm.swappiness=10`):** Reduces aggressive swapping to the slow MicroSD card, extending SD card lifespan and improving desktop smoothness.
+6. **Limits Systemd Journal Size:** Restricts RAM log buffers to 16 MB.
+
+*Result:* Reclaims **~60–80 MB of usable RAM** and significantly reduces background CPU load.
+
+---
+
 ## Included Examples
 
 ### 480×320 System Monitor (`examples/system_monitor.py`)
