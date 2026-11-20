@@ -1,6 +1,6 @@
-# Raspberry Pi 3.5" SPI Touch Screen Setup (RS1535 / Waveshare Type A)
+# Raspberry Pi 3.5" Touchscreen Setup for Bookworm
 
-Configuration and scripts to run the **3.5" GPIO SPI Touch Screen (RS1535 / Waveshare 3.5" Type A)** on **Raspberry Pi OS 12 (Bookworm)**.
+> Native DRM & Wayland driver setup for 3.5" SPI LCD Touchscreens (RS1535 / Waveshare Type A / ILI9486 / ADS7846) on Raspberry Pi OS 12 (Bookworm). Includes touch calibration & Pi Zero debloat optimizations.
 
 ---
 
@@ -59,8 +59,8 @@ Linux 6.x includes the native in-tree DRM driver `drivers/gpu/drm/tiny/ili9486.k
 Connect to your Pi over SSH and run:
 
 ```bash
-git clone https://github.com/your-username/raspberrypi_lcd.git
-cd raspberrypi_lcd
+git clone https://github.com/<your-username>/raspberrypi-3.5-touchscreen-bookworm.git
+cd raspberrypi-3.5-touchscreen-bookworm
 sudo chmod +x setup.sh scripts/*.sh
 sudo ./setup.sh
 ```
