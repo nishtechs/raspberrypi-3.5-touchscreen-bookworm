@@ -40,12 +40,15 @@ The display module features a **26-pin female header** that mounts directly onto
 ## Why Legacy `LCD-show` Scripts Break Bookworm
 
 Older installation scripts (such as `LCD35-show` from GoodTFT or older Waveshare repositories):
+
 1. **Target deprecated paths:** Overwrite `/boot/config.txt` instead of Bookworm's `/boot/firmware/config.txt`.
 2. **Break package dependencies:** Force-install old packages that remove `raspberrypi-ui-mods`, `lightdm`, and `raspi-config`.
 3. **Assume X11/Openbox:** Modern Raspberry Pi OS Bookworm uses **Wayland (`labwc`)** and the **Linux DRM/KMS subsystem** (`/dev/dri/card*`). Legacy scripts install outdated X11 evdev drivers that leave the screen on a blinking cursor.
 
 ### The Modern Bookworm Solution: Native Kernel DRM
+
 Linux 6.x includes the native in-tree DRM driver `drivers/gpu/drm/tiny/ili9486.ko.xz`. When loaded via `dtoverlay=piscreen,drm`:
+
 * It automatically activates 16-bit register transfers for the Waveshare/RS1535 shift register.
 * Exposes a native DRM connector (`SPI-1`) that Wayland (`labwc`) recognizes out of the box.
 * Automatically configures `ADS7846 Touchscreen` with `libinput`.
@@ -59,13 +62,14 @@ Linux 6.x includes the native in-tree DRM driver `drivers/gpu/drm/tiny/ili9486.k
 Connect to your Pi over SSH and run:
 
 ```bash
-git clone https://github.com/<your-username>/raspberrypi-3.5-touchscreen-bookworm.git
+git clone https://github.com/nishtechs/raspberrypi-3.5-touchscreen-bookworm.git
 cd raspberrypi-3.5-touchscreen-bookworm
 sudo chmod +x setup.sh scripts/*.sh
 sudo ./setup.sh
 ```
 
 The script will:
+
 1. Backup `/boot/firmware/config.txt`.
 2. Enable SPI (`dtparam=spi=on`).
 3. Add the native DRM overlay (`dtoverlay=piscreen,drm,speed=18000000,rotate=90`).
@@ -90,17 +94,20 @@ python deploy_ssh.py --host 10.138.170.99 --user pi --password pi
 If you prefer to configure manually:
 
 1. **Edit boot configuration:**
+
    ```bash
    sudo nano /boot/firmware/config.txt
    ```
 
 2. **Ensure these lines are present at the bottom (under `[all]`):**
+
    ```ini
    dtparam=spi=on
    dtoverlay=piscreen,drm,speed=18000000,rotate=90
    ```
 
 3. **Configure Wayland display profile:**
+
    ```bash
    mkdir -p ~/.config/kanshi
    cat << 'EOF' > ~/.config/kanshi/config
@@ -112,15 +119,18 @@ If you prefer to configure manually:
 
 4. **Ensure `labwc` maps touch to `SPI-1`:**
    In `~/.config/labwc/rc.xml`:
+
    ```xml
    <?xml version="1.0"?>
    <openbox_config xmlns="http://openbox.org/3.4/rc">
        <touch deviceName="ADS7846 Touchscreen" mapToOutput="SPI-1" mouseEmulation="yes"/>
    </openbox_config>
    ```
+
    *(With `mapToOutput="SPI-1"`, labwc automatically syncs the touch orientation with the screen transform).*
 
 5. **Reboot:**
+
    ```bash
    sudo reboot
    ```
@@ -183,7 +193,8 @@ Run the optimization script to debloat the system:
 sudo ./scripts/optimize_pi_zero.sh
 ```
 
-### What this optimizes:
+### What this optimizes
+
 1. **Disables Raspberry Pi Connect & WayVNC:** Frees **~40 MB RAM** and eliminates constant background video encoding.
 2. **Removes CUPS Printing Services:** A portable mini display has no need for network printer discovery. Saves **~20 MB RAM**.
 3. **Removes ModemManager:** Stops background serial polling for USB cellular dongles.
@@ -206,6 +217,7 @@ python3 examples/system_monitor.py
 ```
 
 Features:
+
 * Real-time CPU Usage & CPU Temperature
 * RAM & Disk storage utilization
 * Wi-Fi / IP Address
